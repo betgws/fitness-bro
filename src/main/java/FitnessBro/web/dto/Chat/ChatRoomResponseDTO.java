@@ -3,6 +3,7 @@ package FitnessBro.web.dto.Chat;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,18 +24,27 @@ public class ChatRoomResponseDTO {
     public static class ChatRoomInfoDTO{
 
             private Long chatRoomId;
-            private List<ChatMessageRequestDTO> latestChatMessages;
-            private LocalDateTime createdAt;
+            private String senderName;
+            private String partnerName;
+            private String lastChatMessage;
     }
 
     @Builder
     @Getter
+    @Setter
     public static class ChatRoomSimpleDTO{
-        private List<String> chatMessageList;
         private Long chatRoomId;
-        private String lastChatMessage;
-        private LocalDateTime updatedAt;
         private String partnerName;
+        List<ChatMessageDTO> chatMessageDTOList;
+        private String lastChatMessage;
         private String pictureUrl;
+    }
+
+    @Builder
+    @Getter
+    public static class ChatMessageDTO{
+        private String sender;
+        private String message;
+        private LocalDateTime createdAt;
     }
 }

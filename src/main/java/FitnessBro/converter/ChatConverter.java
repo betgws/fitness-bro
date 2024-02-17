@@ -7,7 +7,7 @@ import FitnessBro.web.dto.Chat.ChatMessageResponseDTO;
 import FitnessBro.web.dto.Chat.ChatRoomResponseDTO;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,37 +36,51 @@ public class ChatConverter {
                 .collect(Collectors.toList());
     }
 
-    public static ChatRoomResponseDTO.ChatRoomInfoDTO toChatRoomInfoDTO(ChatRoom chatRoom, List<ChatMessageRequestDTO> chatMessageRequestDTOList){
+    public static ChatRoomResponseDTO.ChatRoomInfoDTO toChatRoomInfoDTO(ChatRoom chatRoom){
         return ChatRoomResponseDTO.ChatRoomInfoDTO.builder()
                 .chatRoomId(chatRoom.getId())
-                .latestChatMessages(chatMessageRequestDTOList)
-                .createdAt(LocalDateTime.now())
+                .senderName(chatRoom.getMember().getNickname())
+                .partnerName(chatRoom.getCoach().getNickname())
                 .build();
     }
 
     public static ChatMessage toChatMessage(ChatMessageRequestDTO message, ChatRoom chatRoom){
 
+        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+
+        // 현재 시간 가져오기
+        LocalDateTime now = LocalDateTime.now(seoulZoneId);
+
         return ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .message(message.getMessage())
-                .createdAt(LocalDateTime.now())
+                .createdAt(now)
                 .sender(message.getSender())
                 .build();
     }
 
+    public static ChatRoomResponseDTO.ChatMessageDTO toSimpleChatMessageDTO(ChatMessage chatMessage){
+        return ChatRoomResponseDTO.ChatMessageDTO.builder()
+                .message(chatMessage.getMessage())
+                .sender(chatMessage.getSender())
+                .createdAt(chatMessage.getCreatedAt())
+                .build();
+    }
+
+    public static List<ChatRoomResponseDTO.ChatMessageDTO> toSimpleChatMessageListDTO(List<ChatMessage> chatMessageList){
+        return chatMessageList.stream()
+                .map(chatMessage -> toSimpleChatMessageDTO(chatMessage))
+                .collect(Collectors.toList());
+    }
+
     public static ChatRoomResponseDTO.ChatRoomSimpleDTO toMemberChatRoomSimpleDTO(ChatRoom chatRoom){
-        List<String> stringList = new ArrayList<>();
-        for(ChatMessage chatMessage:chatRoom.getChatMessage()){
-            String message = chatMessage.getMessage();
-            stringList.add(message);
-        }
+
         return ChatRoomResponseDTO.ChatRoomSimpleDTO.builder()
                 .chatRoomId(chatRoom.getId())
-                .lastChatMessage(chatRoom.getLastChatMessage())
                 .partnerName(chatRoom.getCoach().getNickname())
-                .updatedAt(chatRoom.getUpdatedAt())
+                .chatMessageDTOList(ChatConverter.toSimpleChatMessageListDTO(chatRoom.getChatMessage()))
+                .lastChatMessage(chatRoom.getLastChatMessage())
                 .pictureUrl(chatRoom.getCoach().getPictureURL())
-                .chatMessageList(stringList)
                 .build();
     }
 
@@ -77,19 +91,13 @@ public class ChatConverter {
     }
 
     public static ChatRoomResponseDTO.ChatRoomSimpleDTO toCoachChatRoomSimpleDTO(ChatRoom chatRoom){
-        List<String> stringList = new ArrayList<>();
-        for(ChatMessage chatMessage:chatRoom.getChatMessage()){
-            String message = chatMessage.getMessage();
-            stringList.add(message);
-        }
 
         return ChatRoomResponseDTO.ChatRoomSimpleDTO.builder()
                 .chatRoomId(chatRoom.getId())
-                .lastChatMessage(chatRoom.getLastChatMessage())
                 .partnerName(chatRoom.getMember().getNickname())
-                .updatedAt(chatRoom.getUpdatedAt())
+                .lastChatMessage(chatRoom.getLastChatMessage())
+                .chatMessageDTOList(ChatConverter.toSimpleChatMessageListDTO(chatRoom.getChatMessage()))
                 .pictureUrl(chatRoom.getMember().getPictureURL())
-                .chatMessageList(stringList)
                 .build();
     }
 
@@ -100,11 +108,15 @@ public class ChatConverter {
     }
 
     public static ChatMessageResponseDTO toChatMessageResponseDTO(ChatMessage chatMessage){
+        ZoneId seoulZoneId = ZoneId.of("Asia/Seoul");
+
+        // 현재 시간 가져오기
+        LocalDateTime now = LocalDateTime.now(seoulZoneId);
         return ChatMessageResponseDTO.builder()
                 .id(chatMessage.getId())
                 .message(chatMessage.getMessage())
                 .sender(chatMessage.getSender())
-                .createdAt(LocalDateTime.now())
+                .createdAt(now)
                 .build();
     }
 }

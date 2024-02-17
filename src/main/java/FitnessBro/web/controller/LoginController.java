@@ -48,9 +48,6 @@ public class LoginController {
     @GetMapping("/oauth2/code/kakao")
     public ResponseEntity<LoginDTO> KakaoLogin(@RequestParam("code") String code) {
 
-        // member entity member_id가 String이 아니라서 개판으로 짜임
-
-
         ResponseEntity<String> stringResponseEntity = kakaoService.getKakaoAccessToken(code);
 
         String token = stringResponseEntity.getBody();
@@ -65,7 +62,7 @@ public class LoginController {
     }
 
     @GetMapping("/oauth2/code/naver")
-    public ResponseEntity<String> NaverLogin(@RequestParam("code") String code, @RequestParam("state") String state) {
+    public ResponseEntity<LoginDTO> NaverLogin(@RequestParam("code") String code, @RequestParam("state") String state) {
 
         ResponseEntity<String> stringResponseEntity = naverService.getNaverAccessToken(code, state);
 
@@ -76,12 +73,14 @@ public class LoginController {
 
         String userToken = memberCommandService.joinSocialMember(String.valueOf(userInfo.get("email")), String.valueOf(userInfo.get("id")));
 
-        return ResponseEntity.ok().body(userToken);
+        String userEmail = loginService.decodeJwt(userToken);
+        Long userId = loginService.getIdByEmail(userEmail);
 
+        return ResponseEntity.ok().body(LoginConverter.loginDTO(userToken,userId));
     }
 
     @GetMapping("/oauth2/code/google")
-    public ResponseEntity<String> GoogleLogin(@RequestParam("code") String code) {
+    public ResponseEntity<LoginDTO> GoogleLogin(@RequestParam("code") String code) {
         //requestAccessToken이랑 getNaverAccessToken같은 역할
         ResponseEntity<String> accessTokenResponse = googleService.requestAccessToken(code);
         String accessTokenResponseBody = accessTokenResponse.getBody();
@@ -89,6 +88,9 @@ public class LoginController {
         HashMap<String,String> userInfo = googleService.getUserInfo(accessTokenResponseBody);
         String userToken = memberCommandService.joinSocialMember(userInfo.get("email"), userInfo.get("id"));
 
-        return ResponseEntity.ok().body(userToken);
+        String userEmail = loginService.decodeJwt(userToken);
+        Long userId = loginService.getIdByEmail(userEmail);
+
+        return ResponseEntity.ok().body(LoginConverter.loginDTO(userToken,userId));
     }
 }

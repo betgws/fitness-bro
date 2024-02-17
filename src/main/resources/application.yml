@@ -16,6 +16,8 @@ spring:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
+
+
             user-name-attribute: id
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize
@@ -24,8 +26,9 @@ spring:
             user-name-attribute: response
         registration:
           google:
-            client-id: ${GOOGLE_SOCIAL_CLIENT_SECRET}
+            client-id: ${GOOGLE_SOCIAL_CLIENT_ID}
             client-secret: ${GOOGLE_SOCIAL_CLIENT_SECRET}
+            redirect-uri: https://dev.fitness-bro.pro/login/oauth2/code/google
             scope:
               - profile
               - email
