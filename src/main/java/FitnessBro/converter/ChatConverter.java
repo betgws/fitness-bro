@@ -41,6 +41,7 @@ public class ChatConverter {
                 .chatRoomId(chatRoom.getId())
                 .senderName(chatRoom.getMember().getNickname())
                 .partnerName(chatRoom.getCoach().getNickname())
+                .pictureUrl(chatRoom.getCoach().getPictureURL())
                 .build();
     }
 
@@ -77,9 +78,11 @@ public class ChatConverter {
 
         return ChatRoomResponseDTO.ChatRoomSimpleDTO.builder()
                 .chatRoomId(chatRoom.getId())
+                .userName(chatRoom.getMember().getNickname())
                 .partnerName(chatRoom.getCoach().getNickname())
                 .chatMessageDTOList(ChatConverter.toSimpleChatMessageListDTO(chatRoom.getChatMessage()))
                 .lastChatMessage(chatRoom.getLastChatMessage())
+                .lastChatTime(chatRoom.getUpdatedAt())
                 .pictureUrl(chatRoom.getCoach().getPictureURL())
                 .build();
     }
@@ -94,8 +97,10 @@ public class ChatConverter {
 
         return ChatRoomResponseDTO.ChatRoomSimpleDTO.builder()
                 .chatRoomId(chatRoom.getId())
+                .userName(chatRoom.getCoach().getNickname())
                 .partnerName(chatRoom.getMember().getNickname())
                 .lastChatMessage(chatRoom.getLastChatMessage())
+                .lastChatTime(chatRoom.getUpdatedAt())
                 .chatMessageDTOList(ChatConverter.toSimpleChatMessageListDTO(chatRoom.getChatMessage()))
                 .pictureUrl(chatRoom.getMember().getPictureURL())
                 .build();
