@@ -52,6 +52,7 @@ public class RegisterServiceImpl implements RegisterService{
 
         List<Register> trueRegisterList = new ArrayList<>();
 
+
         for (Register register : registerList) {
 
             if (register.getMemberSuccess() && register.getCoachSuccess()) {
@@ -117,13 +118,14 @@ public class RegisterServiceImpl implements RegisterService{
 
         List<Register> requestRegisterList = new ArrayList<>();
 
+
         for (Register register : registerList) {
 
             if (register.getMemberSuccess() && !register.getCoachSuccess()) {
-                // 유저와 코치가 모두 '성사' 상태일 때만 리스트에 추가
                 requestRegisterList.add(register);
             }
         }
+
         if(requestRegisterList.isEmpty()){
             throw new TempHandler(ErrorStatus.REGISTER_NOT_FOUND);
         }
